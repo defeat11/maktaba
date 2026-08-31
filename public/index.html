@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مكتبة المشاريع | Maktaba</title>
+  <!-- Google Fonts - Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Confidence Badges */
+    .confidence-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      user-select: none;
+      margin-right: 8px;
+    }
+    .confidence-badge:hover {
+      transform: scale(1.05);
+    }
+    .conf-confirmed {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .conf-likely {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .conf-weak {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94a3b8;
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+    .conf-notproject {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    /* Card Overflow Menu */
+    .card-menu-container {
+      position: relative;
+      display: inline-block;
+    }
+    .card-menu-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+      padding: 0 8px;
+      line-height: 1;
+      transition: color 0.25s ease;
+    }
+    .card-menu-btn:hover {
+      color: var(--text-primary);
+    }
+    .card-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      z-index: 1000;
+      border-radius: 6px;
+      padding: 4px 0;
+      width: 150px;
+      box-shadow: var(--shadow-lg);
+    }
+    .card-menu button {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      padding: 8px 12px;
+      width: 100%;
+      text-align: right;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: 'Cairo', sans-serif;
+      transition: background 0.2s ease;
+    }
+    .card-menu button:hover {
+      background: var(--bg-tertiary);
+    }
+    .card-menu-divider {
+      height: 1px;
+      background-color: var(--border-color);
+      margin: 4px 0;
+    }
+    .btn-warning {
+      background: var(--warning);
+      color: #fff;
+    }
+    .btn-warning:hover:not(:disabled) {
+      background: var(--warning-hover);
+    }
+    .card-menu.open {
+      display: block;
+    }
+    /* Backup Ribbon & Badge styles */
+    .backup-ribbon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .backup-badge {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .backup-badge:hover {
+      background: var(--border-color);
+      transform: scale(1.05);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body class="dark">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('maktaba-theme');
+      if (savedTheme === 'light') {
+        document.body.classList.remove('dark');
+      } else if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <!-- Top Glassmorphic Navigation / Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-cubes-stacked"></i>
+        </div>
+        <div>
+          <h1>مكتبة المشاريع</h1>
+          <p class="brand-subtitle">مدير المشاريع ومكتشف التكرار والتشغيل التلقائي</p>
+          <div class="header-stats" id="headerStats" style="font-size: 0.8rem; color: var(--warning); margin-top: 4px; font-weight: 600;">جاري تحميل الإحصائيات...</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="toolbar-search">
+          <div class="search-container" style="display: flex; flex-direction: column; gap: 4px; max-width: 380px; width: 100%;">
+            <div class="search-wrapper" style="max-width: 100%;">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="searchInput" placeholder="بحث ذكي: كلمات متعددة، أو port:3005 type:node path:projects ...">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--text-secondary); padding: 0 4px; gap: 8px;">
+              <span id="searchTip" style="color: var(--text-muted); font-size: 0.68rem; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help;" title="الفلاتر المدعومة: name: type: port: path: desc: stack: class: entry: — والكلمات المتعددة تعمل بمنطق «كل الكلمات»">الفلاتر: name: type: port: path: desc: stack: class: entry: (كل الكلمات)</span>
+              <span id="searchCount" style="font-weight: 600; color: var(--primary); display: none; white-space: nowrap;">0 نتيجة</span>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <button id="rescanBtn" class="btn btn-primary">
+            <i class="fa-solid fa-arrows-rotate btn-icon" id="rescanIcon"></i>
+            <span id="rescanText">إعادة المسح</span>
+          </button>
+          
+          <div class="actions-menu-container">
+            <button id="actionsMenuBtn" class="btn btn-secondary" style="position: relative;">
+              <span>⚡ الإجراءات</span>
+              <span id="actionsMenuDot" class="actions-menu-dot hidden"></span>
+            </button>
+            <div id="actionsMenu" class="actions-menu">
+              <!-- المجموعة الأولى -->
+              <button id="reviewBtn" class="actions-menu-item" style="position: relative;">
+                <i class="fa-solid fa-list-check btn-icon"></i>
+                <span>مراجعة</span>
+                <span id="reviewCountBadge" class="badge-count" style="background: var(--danger); color: white; border-radius: 9999px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; display: none;">0</span>
+              </button>
+              <button id="liveBtn" class="actions-menu-item">
+                <i class="fa-solid fa-bolt btn-icon"></i>
+                <span>المشاريع الحية</span>
+              </button>
+              <button id="modelsBtn" class="actions-menu-item">
+                <i class="fa-solid fa-robot btn-icon"></i>
+                <span>🧠 النماذج المجانية</span>
+              </button>
+              <button id="actionsLogBtn" class="actions-menu-item">
+                <i class="fa-solid fa-clock-rotate-left btn-icon"></i>
+                <span>📜 سجل القرارات</span>
+              </button>
+              <button id="auditBtn" class="actions-menu-item">
+                <i class="fa-solid fa-clipboard-check btn-icon"></i>
+                <span>📋 تدقيق الأسطول</span>
+                <span id="auditWarnBadge" class="badge-count" style="background: var(--warning); color: #1a1a1a; border-radius: 9999px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; display: none;">0</span>
+              </button>
+              <button id="processesBtn" class="actions-menu-item">
+                <i class="fa-solid fa-desktop btn-icon"></i>
+                <span>🖥️ العمليات الحيّة</span>
+                <span id="processesCountBadge" class="badge-count" style="background: var(--danger); color: white; border-radius: 9999px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; margin-right: 6px; display: none;">0</span>
+              </button>
+              <button id="doctorBtn" class="actions-menu-item">
+                <i class="fa-solid fa-stethoscope btn-icon"></i>
+                <span>🩺 الفحص الذاتي</span>
+              </button>
+              
+              <div class="actions-menu-divider"></div>
+              
+              <!-- المجموعة الثانية -->
+              <button id="generateAllBtn" class="actions-menu-item">
+                <i class="fa-solid fa-brain btn-icon"></i>
+                <span>ولّد تقارير الكل (AI)</span>
+              </button>
+              <button id="errorLogsBtn" class="actions-menu-item">
+                <i class="fa-solid fa-circle-exclamation btn-icon"></i>
+                <span>سجل الأخطاء</span>
+              </button>
+              <a id="errorReportLink" class="actions-menu-item" href="/report.html" target="_blank" rel="noopener" title="تقرير أخطاء مُجمَّع وقابل للتنزيل" style="text-decoration:none;">
+                <i class="fa-solid fa-stethoscope btn-icon"></i>
+                <span>تقرير الأخطاء</span>
+              </a>
+              
+              <div class="actions-menu-divider"></div>
+              
+              <!-- المجموعة الثالثة -->
+              <button id="exportCsvBtn" class="actions-menu-item">
+                <i class="fa-solid fa-file-csv btn-icon"></i>
+                <span>⬇ تصدير CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-switcher-nav" style="display: inline-flex; gap: 6px; align-items: center; margin-left: 8px;">
+            <a href="/theme-qwen-max.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(0, 242, 254, 0.1); border: 1px solid #00f2fe; color: #00f2fe; text-decoration: none; border-radius: 8px;" title="واجهة Qwen Max Cyber Matrix"><i class="fa-solid fa-bolt"></i> Cyber Matrix</a>
+            <a href="/theme-coder.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(88, 166, 255, 0.1); border: 1px solid #58a6ff; color: #58a6ff; text-decoration: none; border-radius: 8px;" title="واجهة Qwen Coder Studio"><i class="fa-solid fa-code"></i> Coder Studio</a>
+            <a href="/theme-apple-pro.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid #fff; color: #fff; text-decoration: none; border-radius: 8px;" title="واجهة Apple Pro Ultra"><i class="fa-brands fa-apple"></i> Apple Ultra</a>
+          </div>
+
+          <button id="themeToggle" class="btn btn-secondary" title="تبديل الوضع الليلي/النهاري">
+            <span>🌙 / ☀️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Chips Area -->
+    <div class="filter-section">
+      <span class="filter-label">تصفية حسب النوع:</span>
+      <div class="filter-chips" id="filterChips">
+        <button class="chip active" data-type="الكل">الكل</button>
+        <button class="chip" data-type="Node">Node</button>
+        <button class="chip" data-type="Python">Python</button>
+        <button class="chip" data-type="PHP">PHP</button>
+        <button class="chip" data-type="Java">Java</button>
+        <button class="chip" data-type="Static">Static</button>
+      </div>
+    </div>
+
+    <!-- Classification Filter Chips Area -->
+    <div class="filter-section" style="border-top: none; padding-top: 0; margin-top: 8px;">
+      <span class="filter-label">تصفية حسب الحالة:</span>
+      <div class="filter-chips" id="classificationChips">
+        <button class="chip active" data-classification="الكل">الكل</button>
+        <button class="chip" data-classification="confirmed">مؤكّد</button>
+        <button class="chip" data-classification="likely">محتمل</button>
+        <button class="chip" data-classification="weak">ضعيف</button>
+        <button class="chip" data-classification="not-project">غير مشروع</button>
+      </div>
+      <div class="toggle-wrapper" style="margin-right: auto; margin-left: 0; display: flex; align-items: center; gap: 16px;">
+        <div id="classificationCounts" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+        <label class="switch-label" style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
+          <input type="checkbox" id="showNonProjects" style="cursor: pointer;">
+          <span>إظهار غير المشاريع</span>
+        </label>
+        <label class="switch-label" style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
+          <input type="checkbox" id="showBackups" style="cursor: pointer;">
+          <span>إظهار النسخ الاحتياطية</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Quick Status Filter Chips Area -->
+    <div class="filter-section" style="border-top: none; padding-top: 0; margin-top: 8px;">
+      <span class="filter-label">الحالة السريعة:</span>
+      <div class="filter-chips" id="statusQuickFilters">
+        <button class="chip active" data-status="all">الكل</button>
+        <button class="chip" data-status="running">🟢 يعمل الآن</button>
+        <button class="chip" data-status="broken">🔴 معطوب</button>
+        <button class="chip" data-status="review">🟡 يحتاج مراجعة</button>
+        <button class="chip" data-status="healthy">✨ سليم</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Dashboard -->
+  <main class="dashboard-content">
+    <!-- Doctor alert banner -->
+    <div id="doctorAlertBanner" class="hidden">
+      <div class="doctor-alert-content">
+        <span class="doctor-alert-text" id="doctorAlertText">🩺 0 مشروع معطوب و 0 يحتاج مراجعة — هل تريد تشغيل طابور الإصلاح؟</span>
+        <div class="doctor-alert-actions">
+          <button id="doctorAlertFixBtn" class="btn btn-primary">شغّل الطابور</button>
+          <button id="doctorAlertDismissBtn" class="btn btn-secondary">تجاهل</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Maktaba stashed and has not given back -->
+    <div id="restoreBanner" class="hidden" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); margin-bottom: 24px; padding: 14px 16px; border-radius: 8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span id="restoreBannerText" style="font-size:0.95rem;font-weight:600;color:var(--text-primary);">…</span>
+        <button id="restoreBannerBtn" class="btn btn-primary" style="font-size:0.82rem;padding:7px 14px;">اعرض التفاصيل</button>
+      </div>
+      <div id="restoreBannerList" style="margin-top:10px;display:none;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- Batch progress banner -->
+    <div id="batchProgress" class="hidden" style="background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border: 1px solid #334155; margin-bottom: 24px; padding: 16px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="batchProgressText" style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); font-family: 'Cairo', sans-serif;">يُولّد التقارير…</span>
+        <button id="stopBatchBtn" class="btn btn-danger" style="padding: 4px 12px; font-size: 0.85rem;">إيقاف</button>
+      </div>
+      <div style="background: #1e293b; border-radius: 9999px; height: 10px; overflow: hidden; border: 1px solid #334155; width: 100%;">
+        <div id="batchProgressBarFill" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+      </div>
+    </div>
+
+    <!-- Grid of Projects -->
+    <div id="projectGrid" class="project-grid">
+      <!-- Project cards or skeletons will be injected here -->
+    </div>
+  </main>
+
+  <!-- Logs Monospace Modal -->
+  <!-- Program detail sheet: everything Maktaba has measured about one program -->
+  <div id="profileModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 860px; width: 94%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-id-card" style="color: var(--primary); margin-left: 8px;"></i><span id="profileModalTitle">تفاصيل البرنامج</span></h3>
+        <button id="closeProfileModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 74vh; overflow-y: auto;">
+        <div id="profileBody">جاري القراءة…</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="logsModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="logsModalTitle"><i class="fa-solid fa-terminal logs-title-icon"></i>سجل مخرجات المشروع</h3>
+        <button id="closeLogsBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="logs-container">
+          <pre id="logsContent">جاري تحميل السجلات...</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <label class="auto-scroll-label">
+          <input type="checkbox" id="autoScrollCheck" checked>
+          <span>التمرير التلقائي للأسفل</span>
+        </label>
+        <div class="modal-status-text" id="logsStatus">جاري تحديث السجل كل ثانيتين...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Logs Monospace Modal -->
+  <div id="errorLogsModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-bug warning-icon"></i> سجل أخطاء النظام (error.log)</h3>
+        <button id="closeErrorLogsBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="logs-container">
+          <pre id="errorLogsContent">جاري تحميل سجل الأخطاء...</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="refreshErrorLogsBtn" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate"></i> تحديث</button>
+        <div class="modal-status-text">آخر 200 سطر من سجل الأخطاء (الأحدث بالأعلى)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicates Overlay Modal -->
+  <div id="duplicatesModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-triangle-exclamation warning-icon"></i>مجلدات مكررة مطابقة</h3>
+        <button id="closeDuplicatesBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="duplicates-intro">المجلدات التالية تحتوي على نفس الاسم أو نفس الملفات والمحتويات في مسارات مختلفة:</p>
+        <ul id="duplicatesList" class="duplicates-list">
+          <!-- Duplicate paths injected here -->
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmDuplicatesBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signals Explanation Modal -->
+  <div id="signalsModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-circle-info warning-icon"></i> سبب التقييم</h3>
+        <button id="closeSignalsBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <ul id="signalsList" class="duplicates-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+          <!-- Signals details injected here -->
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmSignalsBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed AI Overview Modal -->
+  <div id="overviewModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-brain brain-icon" style="margin-left: 8px; color: var(--primary);"></i><span id="overviewModalTitleText">نظرة تفصيلية على المشروع</span></h3>
+        <button id="closeOverviewBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="overviewTechStack" style="margin-bottom: 12px; display: none;">
+          <span id="overviewTechStackBadge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 10px; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; display: inline-block;"></span>
+        </div>
+        <div id="overviewModalBody" style="line-height: 1.7; font-size: 0.95rem; color: var(--text-primary); text-align: justify; white-space: normal;">
+          <!-- Content goes here -->
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="overviewModalTime" style="font-size: 0.8rem; color: var(--text-secondary);"></span>
+        <button id="confirmOverviewBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backups Modal -->
+  <div id="backupsModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-box warning-icon" style="color: var(--primary); margin-left: 8px;"></i>النسخ الاحتياطية للمشروع</h3>
+        <button id="closeBackupsBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="duplicates-intro" id="backupsModalTitleText" style="font-weight: 600; margin-bottom: 12px;"></p>
+        <ul id="backupsList" class="duplicates-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Backup paths injected here -->
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmBackupsBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Run Command Modal -->
+  <div id="runCommandModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-terminal warning-icon" style="color: var(--primary); margin-left: 8px;"></i>إعداد أمر التشغيل للمشروع</h3>
+        <button id="closeRunCommandBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <strong style="display: block; margin-bottom: 6px; font-size: 0.9rem;">الأمر الحالي المستخدم:</strong>
+          <div style="background: #0f172a; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; color: #38bdf8; direction: ltr; text-align: left; overflow-x: auto; white-space: nowrap;" id="currentLaunchCommandVal">
+            جاري التحميل...
+          </div>
+          <div style="margin-top: 6px; font-size: 0.75rem; color: var(--text-secondary);" id="launchCommandSourceVal">
+            نوع المشغل: جاري التحميل...
+          </div>
+        </div>
+
+        <div>
+          <label for="runCommandInput" style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem;">أمر تشغيل مخصّص:</label>
+          <input type="text" id="runCommandInput" placeholder="مثال: node server.js أو python main.py" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; box-sizing: border-box; direction: ltr;">
+          <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4;">
+            سيتم استبدال الفحص التلقائي بهذا الأمر. اتركه فارغاً للعودة للتشغيل التلقائي الذكي.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button id="saveRunCommandBtn" class="btn btn-success">حفظ</button>
+        <button id="clearRunCommandBtn" class="btn btn-secondary">إرجاع للتلقائي</button>
+        <button id="confirmRunCommandBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Fix Result Modal -->
+  <div id="fixModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-wrench warning-icon" style="color: var(--primary); margin-left: 8px;"></i><span id="fixModalTitleText">نتيجة الإصلاح</span></h3>
+        <button id="closeFixBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="fixModalBody" style="line-height: 1.7; font-size: 0.95rem; color: var(--text-primary); text-align: justify; white-space: normal;">
+          <!-- Content goes here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmFixBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Triage / Review Modal -->
+  <div id="reviewModal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-list-check warning-icon" style="color: var(--primary); margin-left: 8px;"></i>مراجعة العناصر غير المؤكّدة</h3>
+        <button id="closeReviewModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="reviewModalBody" style="max-height: 60vh; overflow-y: auto;">
+        <!-- Injected sections by JS -->
+      </div>
+      <div class="modal-footer">
+        <button id="confirmReviewModalBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Healthcheck Modal -->
+  <div id="healthModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-stethoscope warning-icon" style="color: var(--primary); margin-left: 8px;"></i>فحص تشغيل المشروع</h3>
+        <button id="closeHealthModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="healthModalBody" style="max-height: 60vh; overflow-y: auto;">
+        <!-- Dynamic content goes here -->
+      </div>
+      <div class="modal-footer">
+        <button id="confirmHealthModalBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Projects Modal -->
+  <div id="liveModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-bolt warning-icon" style="color: var(--warning); margin-left: 8px;"></i>المشاريع الحية والإقلاع التلقائي</h3>
+        <button id="closeLiveModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="autostart-boot-control" style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+          <label class="switch-label" style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="autostartBootCheck" style="cursor: pointer;">
+            <span>تشغيل المكتبة تلقائياً عند إقلاع الجهاز</span>
+          </label>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 6px 0 0 0; line-height: 1.5;">
+            عند إقلاع ويندوز ستشتغل المكتبة وتشغّل المشاريع الحية وتبقيها حيّة تلقائياً.
+          </p>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="margin: 0; font-weight: 700; color: var(--primary);">قائمة المشاريع الحية</h4>
+          <button id="startLiveNowBtn" class="btn btn-primary" style="padding: 4px 12px; font-size: 0.85rem; font-family: 'Cairo', sans-serif;">
+            <i class="fa-solid fa-play" style="margin-left: 4px;"></i> شغّل الحية الآن
+          </button>
+        </div>
+
+        <div id="liveModalList" style="max-height: 40vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmLiveModalBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Processes Modal -->
+  <div id="processesModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 1050px; width: 95%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-desktop warning-icon" style="color: var(--primary); margin-left: 8px;"></i>🖥️ متتبع العمليات والمشاريع الحية</h3>
+        <button id="closeProcessesModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+          <div>
+            <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">العمليات النشطة بالنظام (Node.js / Python / ACP)</span>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 2px 0 0 0;">كشف وتحديد مسارات المشاريع الحية، منافذ الشبكة المفتوحة، ومطابقتها التلقائية مع الكتالوج</p>
+          </div>
+          <button id="refreshProcessesBtn" class="btn btn-primary" style="font-family: 'Cairo'; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span>🔄 تحديث العمليات</span>
+          </button>
+        </div>
+        
+        <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 8px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: right; direction: rtl; font-size: 0.85rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(255,255,255,0.02);">
+                <th style="padding: 10px 12px;">النوع</th>
+                <th style="padding: 10px 12px;">PID</th>
+                <th style="padding: 10px 12px;">المشروع / المسار</th>
+                <th style="padding: 10px 12px; text-align: center;">المنافذ (Ports)</th>
+                <th style="padding: 10px 12px; text-align: center;">الحالة والثقة</th>
+                <th style="padding: 10px 12px;">سطر الأوامر</th>
+                <th style="padding: 10px 12px; text-align: center;">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="processesTableBody">
+              <!-- Dynamic rows go here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmProcessesModalBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Self-Doctor Modal -->
+  <!-- Every decision Maktaba made about a project, and the way back.
+       Before this, changing a port or a classification left no trace at all:
+       zero lines in app.log, and nothing to reverse it with. -->
+  <div id="actionsLogModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 900px; width: 96%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary); margin-left: 8px;"></i>سجل القرارات</h3>
+        <button id="closeActionsLogBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 76vh; overflow-y: auto;">
+        <p style="margin:0 0 12px;font-size:0.78rem;color:var(--text-muted);line-height:1.7;">
+          كل قرار غيّرت فيه المكتبة شيئاً في مشاريعك. التراجع يُعيد القيمة <strong>المسجَّلة وقت التغيير</strong>،
+          ولا يحسب العكس لاحقاً.
+        </p>
+        <div id="actionsLogBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The daily fleet audit. It has been written to disk every morning since it
+       was scheduled, and until now nothing in the app ever read it back. -->
+  <div id="auditModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 940px; width: 96%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clipboard-check" style="color: var(--primary); margin-left: 8px;"></i>تدقيق الأسطول</h3>
+        <button id="closeAuditModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 78vh; overflow-y: auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <span id="auditMeta" style="font-size:0.86rem;color:var(--text-secondary);">…</span>
+          <button id="auditRunBtn" class="btn btn-primary" style="font-size:0.8rem;padding:7px 14px;">شغّل التدقيق الآن</button>
+        </div>
+        <div id="auditBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OpenRouter free models: browse the details, then talk to one -->
+  <div id="modelsModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 1120px; width: 96%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-robot" style="color: var(--primary); margin-left: 8px;"></i>النماذج المجانية على OpenRouter</h3>
+        <button id="closeModelsModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 78vh; overflow-y: auto;">
+
+        <!-- key -->
+        <div id="orKeyBox" style="margin-bottom: 16px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary);">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span id="orKeyState" style="font-size:0.86rem;color:var(--text-secondary);">جاري الفحص…</span>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input type="password" id="orKeyInput" placeholder="sk-or-..." autocomplete="off"
+                     style="direction:ltr;min-width:230px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:7px 10px;color:var(--text-primary);font-family:monospace;font-size:0.8rem;">
+              <button id="orSaveKeyBtn" class="btn btn-primary" style="font-size:0.8rem;padding:7px 14px;">حفظ</button>
+              <button id="orClearKeyBtn" class="btn btn-secondary" style="font-size:0.8rem;padding:7px 14px;">حذف</button>
+            </div>
+          </div>
+          <p style="margin:8px 0 0;font-size:0.76rem;color:var(--text-muted);line-height:1.6;">
+            المفتاح يُحفظ على جهازك فقط ولا يُرسَل للمتصفح أبداً — الخادم هو من يتصل بـ OpenRouter.
+            احصل على مفتاح من <span style="direction:ltr;font-family:monospace;">openrouter.ai/keys</span>.
+            تصفّح النماذج وتفاصيلها بدون مفتاح؛ المفتاح مطلوب للمحادثة فقط.
+          </p>
+        </div>
+
+        <!-- Measured ranking, and the gateway that routes by it -->
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:16px;">
+
+          <div style="padding:12px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-tertiary);">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+              <strong style="font-size:0.86rem;"><i class="fa-solid fa-ranking-star" style="color:var(--primary);margin-left:6px;"></i>الأفضل بالقياس</strong>
+              <div style="display:flex;gap:6px;">
+                <button id="orBenchBtn" class="btn btn-primary" style="font-size:0.76rem;padding:6px 12px;">قِس النماذج</button>
+                <button id="orBenchStopBtn" class="btn btn-secondary hidden" style="font-size:0.76rem;padding:6px 12px;">إيقاف</button>
+              </div>
+            </div>
+            <div id="orBenchState" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);line-height:1.7;">…</div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-color);">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <strong style="font-size:0.82rem;">أيّها مفتوح لك فعلاً؟</strong>
+                <button id="orAvailBtn" class="btn btn-secondary" style="font-size:0.74rem;padding:5px 11px;">افحص المتاح</button>
+              </div>
+              <div id="orAvailState" style="margin-top:6px;font-size:0.78rem;color:var(--text-secondary);line-height:1.7;">…</div>
+              <p style="margin:6px 0 0;font-size:0.7rem;color:var(--text-muted);line-height:1.6;">
+                «مجاني» في القائمة يعني السعر صفر — لا يعني أنك تقدر تستخدمه. الفحص يسأل كل نموذج
+                سؤالاً واحداً صغيراً (طلب واحد بدل خمسة).
+              </p>
+            </div>
+            <p style="margin:8px 0 0;font-size:0.72rem;color:var(--text-muted);line-height:1.6;">
+              خمسة اختبارات لها إجابة صحيحة معروفة: تنفيذ التعليمة، العربية، الحساب، JSON، الكود.
+              الترتيب من نتيجتها الفعلية — لا تخمين.
+            </p>
+          </div>
+
+          <div style="padding:12px 14px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-tertiary);">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+              <strong style="font-size:0.86rem;"><i class="fa-solid fa-plug-circle-bolt" style="color:var(--primary);margin-left:6px;"></i>بوابة المكتبة (API)</strong>
+              <div style="display:flex;gap:6px;">
+                <button id="gwTokenBtn" class="btn btn-primary" style="font-size:0.76rem;padding:6px 12px;">أنشئ مفتاحاً</button>
+                <button id="gwUsageBtn" class="btn btn-secondary" style="font-size:0.76rem;padding:6px 12px;">الاستخدام</button>
+              </div>
+            </div>
+            <div id="gwState" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);line-height:1.7;">…</div>
+            <div id="gwToken" class="hidden" style="margin-top:8px;"></div>
+            <p style="margin:8px 0 0;font-size:0.72rem;color:var(--text-muted);line-height:1.6;">
+              أي برنامج يفهم بروتوكول OpenAI يقدر يشتغل على المكتبة. اكتب
+              <code style="direction:ltr;font-family:monospace;">auto</code> بدل اسم النموذج وتختار المكتبة الأفضل تلقائياً.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+          <span id="orModelsCount" style="font-size:0.9rem;font-weight:600;">…</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="search" id="orFilter" placeholder="فلتر بالاسم أو المزوّد…"
+                   style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:7px 12px;color:var(--text-primary);font-size:0.82rem;min-width:180px;">
+            <button id="orRefreshBtn" class="btn btn-secondary" style="font-size:0.8rem;padding:7px 12px;">
+              <i class="fa-solid fa-arrows-rotate"></i> تحديث
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px;align-items:start;">
+          <div id="orModelList" style="display:grid;gap:8px;max-height:62vh;overflow-y:auto;padding-left:4px;"></div>
+          <div id="orChatPane" style="border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary);display:flex;flex-direction:column;min-height:52vh;max-height:62vh;">
+            <div id="orChatHeader" style="padding:10px 14px;border-bottom:1px solid var(--border-color);font-size:0.86rem;color:var(--text-secondary);">
+              اختر نموذجاً من اليمين لتبدأ المحادثة
+            </div>
+            <div id="orChatLog" style="flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;"></div>
+            <div style="padding:10px 12px;border-top:1px solid var(--border-color);display:flex;gap:8px;">
+              <textarea id="orChatInput" rows="2" placeholder="اكتب رسالتك…" disabled
+                        style="flex:1;resize:vertical;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:8px 10px;color:var(--text-primary);font-family:var(--font-family);font-size:0.86rem;"></textarea>
+              <button id="orSendBtn" class="btn btn-primary" disabled style="align-self:stretch;padding:0 16px;">إرسال</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="doctorModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-stethoscope warning-icon" style="color: var(--primary); margin-left: 8px;"></i>🩺 الفحص الذاتي</h3>
+        <button id="closeDoctorModalBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <div id="doctorBudgetLine" style="margin-bottom: 14px; padding: 10px 12px; border-radius: 8px; background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148, 163, 184, 0.25); font-size: 0.85rem; color: var(--text-secondary);">
+          ميزانية الذكاء اليوم: <strong id="doctorBudgetText">—</strong>
+        </div>
+        <div class="doctor-stats-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div class="doctor-stat-box" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">سليم</div>
+            <strong id="doctorStatHealthy" style="font-size: 1.5rem; color: #10b981; font-weight: 700;">0</strong>
+          </div>
+          <div class="doctor-stat-box" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">معطوب</div>
+            <strong id="doctorStatBroken" style="font-size: 1.5rem; color: #ef4444; font-weight: 700;">0</strong>
+          </div>
+          <div class="doctor-stat-box" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">يحتاج مراجعة</div>
+            <strong id="doctorStatReview" style="font-size: 1.5rem; color: #f59e0b; font-weight: 700;">0</strong>
+          </div>
+          <div class="doctor-stat-box" style="background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.2); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">غير مفحوص</div>
+            <strong id="doctorStatUninspected" style="font-size: 1.5rem; color: #94a3b8; font-weight: 700;">0</strong>
+          </div>
+          <div class="doctor-stat-box" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); padding: 12px; border-radius: 8px; text-align: center;" title="فُحص لكن تعذّر الحكم — لن يُرسَل إليه وكيل إصلاح">
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">غير محسوم</div>
+            <strong id="doctorStatUnknown" style="font-size: 1.5rem; color: #818cf8; font-weight: 700;">0</strong>
+          </div>
+        </div>
+
+        <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 0.95rem; color: var(--text-primary);">فحص كافة المشاريع</strong>
+            <div style="display: flex; gap: 8px;">
+              <button id="startDoctorScanBtn" class="btn btn-primary" style="font-family: 'Cairo';">ابدأ فحص الكل</button>
+              <button id="stopDoctorScanBtn" class="btn btn-danger hidden" style="font-family: 'Cairo';">إيقاف</button>
+            </div>
+          </div>
+          <div id="doctorScanProgress" class="hidden" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+              <span id="doctorScanProgressText" style="color: var(--text-primary);">جاري الفحص...</span>
+              <span id="doctorScanProgressTime" style="color: var(--text-secondary); direction: ltr;">0:00</span>
+            </div>
+            <div style="background: #1e293b; border-radius: 9999px; height: 10px; overflow: hidden; border: 1px solid #334155; width: 100%;">
+              <div id="doctorScanProgressBarFill" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 0.95rem; color: var(--text-primary);">طابور الإصلاح التلقائي</strong>
+            <div style="display: flex; gap: 8px;">
+              <button id="startDoctorFixBtn" class="btn btn-primary" style="font-family: 'Cairo';">ابدأ طابور الإصلاح</button>
+              <button id="stopDoctorFixBtn" class="btn btn-danger hidden" style="font-family: 'Cairo';">إيقاف</button>
+            </div>
+          </div>
+          <div id="doctorFixProgress" class="hidden" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+              <span id="doctorFixProgressText" style="color: var(--text-primary);">جاري الإصلاح...</span>
+            </div>
+            <div style="background: #1e293b; border-radius: 9999px; height: 10px; overflow: hidden; border: 1px solid #334155; width: 100%;">
+              <div id="doctorFixProgressBarFill" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h4 style="margin: 0 0 12px 0; font-weight: 700; color: var(--primary);">مشاريع تحتاج مراجعة</h4>
+          <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; direction: rtl; font-size: 0.85rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(255,255,255,0.02);">
+                  <th style="padding: 10px 12px;">المشروع</th>
+                  <th style="padding: 10px 12px;">آخر ملخص فشل</th>
+                  <th style="padding: 10px 12px; text-align: center; width: 180px;">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="doctorNeedsReviewTableBody">
+                <!-- Dynamic rows go here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmDoctorModalBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Onboarding (AI Blueprint) Modal -->
+  <div id="aiOnboardModal" class="modal-overlay hidden">
+    <div class="modal-card modal-medium">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-robot brain-icon" style="margin-left: 8px; color: var(--primary);"></i>بصمة التشغيل الذكية (AI Onboarding)</h3>
+        <button id="closeAiOnboardBtn" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px; line-height: 1.6; text-align: right;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <strong style="font-size: 0.9rem;">أمر التشغيل المقترح:</strong>
+            <span id="aiOnboardRunModeBadge" style="font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: #fff; background: var(--border-color); display: inline-block;">-</span>
+          </div>
+          <div id="aiOnboardRunCommand" style="background: #0f172a; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #38bdf8; direction: ltr; text-align: left; overflow-x: auto; white-space: nowrap;">
+            -
+          </div>
+          <div id="aiOnboardRunCommandNote" style="font-size: 0.75rem; color: var(--warning); margin-top: 4px; display: none;">
+            * تم ضبط أمر التشغيل تلقائياً للمشروع.
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <strong style="display: block; margin-bottom: 2px; font-size: 0.9rem;">نوع المشروع (runKind):</strong>
+            <span id="aiOnboardRunKind" style="background: rgba(148, 163, 184, 0.15); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; display: inline-block;">-</span>
+          </div>
+          <div>
+            <strong style="display: block; margin-bottom: 2px; font-size: 0.9rem;">منفذ ويب متوقع:</strong>
+            <span id="aiOnboardWebPort" style="background: rgba(148, 163, 184, 0.15); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; display: inline-block;">-</span>
+          </div>
+        </div>
+
+        <div>
+          <strong style="display: block; margin-bottom: 4px; font-size: 0.9rem;">درجة الثقة:</strong>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="background: #1e293b; border-radius: 9999px; height: 10px; overflow: hidden; border: 1px solid #334155; width: 100%;">
+              <div id="aiOnboardConfidenceBar" style="background: var(--primary); height: 100%; width: 0%;"></div>
+            </div>
+            <span id="aiOnboardConfidenceVal" style="font-size: 0.85rem; font-weight: 600; color: var(--primary); white-space: nowrap;">0%</span>
+          </div>
+        </div>
+
+        <div>
+          <strong style="display: block; margin-bottom: 4px; font-size: 0.9rem;">الملفات المفقودة:</strong>
+          <ul id="aiOnboardMissingFiles" style="margin: 0; padding-right: 20px; font-size: 0.85rem; color: #f43f5e; list-style-type: square;">
+            <!-- Injected by JS -->
+          </ul>
+        </div>
+
+        <div id="aiOnboardServicesSection" style="display: none; margin-bottom: 4px;">
+          <strong style="display: block; margin-bottom: 6px; font-size: 0.9rem;">خدمات المشروع (تشغيل موحّد):</strong>
+          <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-color); border-radius: 6px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: right; direction: rtl;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); background: rgba(255,255,255,0.02);">
+                  <th style="padding: 8px;">الاسم</th>
+                  <th style="padding: 8px;">المجلد (dir)</th>
+                  <th style="padding: 8px;">الأمر (command)</th>
+                  <th style="padding: 8px;">المنفذ</th>
+                  <th style="padding: 8px; text-align: center;">الرئيسية</th>
+                </tr>
+              </thead>
+              <tbody id="aiOnboardServicesList">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 0.72rem; color: var(--warning); margin: 4px 0 0 0; line-height: 1.4;">
+            * سيتم تشغيل كل هذه الخدمات معاً كمنظومة واحدة عند الضغط على زر تشغيل.
+          </p>
+        </div>
+
+        <div>
+          <strong style="display: block; margin-bottom: 4px; font-size: 0.9rem;">مشاريع فرعية مكتشفة:</strong>
+          <div id="aiOnboardSubProjects" style="display: flex; flex-direction: column; gap: 6px;">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <div>
+          <strong style="display: block; margin-bottom: 4px; font-size: 0.9rem;">ملاحظات التشغيل:</strong>
+          <div id="aiOnboardNotes" style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; font-size: 0.85rem; color: var(--text-primary);">
+            -
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
+        <button id="confirmAiOnboardBtn" class="btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Running Projects Dock Sidebar -->
+  <aside id="runningDock" class="running-dock">
+    <div class="dock-header" id="dockHeader">
+      <div class="dock-title">
+        <i class="fa-solid fa-play-circle" style="color: var(--success); margin-left: 6px;"></i>
+        <span>تعمل الآن</span>
+        <span id="dockCountBadge" class="dock-count-badge">0</span>
+      </div>
+      <button class="dock-toggle-btn" id="dockToggleBtn" aria-label="طي/فتح">
+        <i class="fa-solid fa-chevron-right" id="dockToggleIcon"></i>
+      </button>
+    </div>
+    <div class="dock-content" id="dockContent">
+      <!-- Injected by JS -->
+    </div>
+  </aside>
+
+  <!-- Toast Notification System -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

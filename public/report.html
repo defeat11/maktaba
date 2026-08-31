@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تقرير أخطاء مكتبة · Maktaba Error Report</title>
+  <style>
+    :root {
+      --bg: #0e1116; --panel: #161b22; --panel-2: #1c2230; --border: #2a3140;
+      --text: #e6edf3; --muted: #8b97a6; --accent: #4493f8; --accent-2: #2ea043;
+      --danger: #f85149; --warn: #d29922; --ok: #2ea043; --chip: #21262d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      padding: 22px 26px; border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #11161d, #0e1116);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    header h1 { font-size: 20px; margin: 0; font-weight: 700; }
+    header .sub { color: var(--muted); font-size: 13px; }
+    .spacer { flex: 1; }
+    .btn {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 9px 15px; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: filter .15s ease;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn.secondary { background: var(--chip); color: var(--text); border: 1px solid var(--border); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    main { padding: 22px 26px; max-width: 1180px; margin: 0 auto; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+    .card .n { font-size: 30px; font-weight: 800; }
+    .card .l { color: var(--muted); font-size: 13px; }
+    .card.clean .n { color: var(--ok); }
+    .card.has .n { color: var(--danger); }
+    section h2 { font-size: 16px; margin: 26px 0 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    th, td { text-align: right; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+    th { background: var(--panel-2); color: var(--muted); font-weight: 600; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    .scope { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--accent); white-space: nowrap; }
+    .count { font-weight: 800; text-align: center; }
+    .count.hi { color: var(--danger); }
+    .msg { color: var(--text); }
+    .time { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 12px; }
+    details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin: 8px 0; padding: 4px 12px; }
+    details summary { cursor: pointer; padding: 8px 0; font-size: 13px; }
+    pre { background: #0a0d12; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12px; color: #c9d1d9; direction: ltr; text-align: left; }
+    .empty { text-align: center; padding: 50px 20px; color: var(--ok); font-size: 18px; }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .badge.crash { background: rgba(248,81,73,.15); color: var(--danger); }
+    .badge.runtime { background: rgba(210,153,34,.15); color: var(--warn); }
+    .badge.info { background: rgba(68,147,248,.15); color: var(--accent); }
+    .foot { color: var(--muted); font-size: 12px; margin-top: 18px; }
+    a { color: var(--accent); }
+    .err-banner { background: rgba(248,81,73,.12); border: 1px solid var(--danger); color: #ffb3ae; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>🩺 تقرير أخطاء مكتبة</h1>
+      <div class="sub">Maktaba — Error Report · <span id="gen">—</span></div>
+    </div>
+    <div class="spacer"></div>
+    <label class="sub" style="display:flex;align-items:center;gap:6px;">
+      <input type="checkbox" id="auto" /> تحديث تلقائي (10ث)
+    </label>
+    <button class="btn secondary" id="refresh">↻ تحديث</button>
+    <button class="btn secondary" id="download">⬇ تنزيل MD</button>
+    <button class="btn" id="regen">إنشاء التقرير</button>
+    <a class="btn secondary" href="/" style="text-decoration:none;">← لوحة المكتبة</a>
+  </header>
+  <main>
+    <div class="err-banner" id="errBanner"></div>
+    <div class="cards">
+      <div class="card" id="cTotal"><div class="n">—</div><div class="l">إجمالي الأخطاء المسجّلة</div></div>
+      <div class="card"><div class="n" id="nGroups">—</div><div class="l">أنواع فريدة</div></div>
+      <div class="card"><div class="n" id="nRecent">—</div><div class="l">في آخر 24 ساعة</div></div>
+      <div class="card"><div class="n" id="nScopes">—</div><div class="l">مصادر (scopes)</div></div>
+    </div>
+
+    <div id="body"></div>
+
+    <div class="foot">
+      مصدر البيانات: <code>GET /api/reports/errors</code> · الملف: <code>logs/ERROR-REPORT.md</code> +
+      <code>logs/error-reports.jsonl</code>. يُحدّث التقرير تلقائياً عند كل تشغيل للخادم وعند كل خطأ جديد.
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    // Heuristic severity classification from the scope/message text.
+    function severity(scope, msg) {
+      const s = (scope + ' ' + msg).toLowerCase();
+      if (/uncaught|unhandled|crash|cannot read|undefined is not|is not a function|eaddrinuse/.test(s)) return ['crash', 'حرِج'];
+      if (/express-global|500|timed out|spawn|enoent|failed/.test(s)) return ['runtime', 'تشغيل'];
+      return ['info', 'عام'];
+    }
+    function timeAgo(iso) {
+      const d = (Date.now() - new Date(iso).getTime()) / 1000;
+      if (d < 60) return 'الآن';
+      if (d < 3600) return Math.floor(d / 60) + 'د';
+      if (d < 86400) return Math.floor(d / 3600) + 'س';
+      return Math.floor(d / 86400) + 'ي';
+    }
+
+    async function load() {
+      $('errBanner').style.display = 'none';
+      try {
+        const r = await fetch('/api/reports/errors');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        render(data);
+      } catch (e) {
+        $('errBanner').style.display = 'block';
+        $('errBanner').textContent = 'تعذّر جلب التقرير: ' + e.message;
+      }
+    }
+
+    function render(data) {
+      $('gen').textContent = new Date(data.generatedAt).toLocaleString('ar');
+      const cTotal = $('cTotal');
+      cTotal.classList.toggle('clean', data.total === 0);
+      cTotal.classList.toggle('has', data.total > 0);
+      cTotal.querySelector('.n').textContent = data.total;
+      $('nGroups').textContent = data.uniqueGroups;
+      const dayAgo = Date.now() - 86400000;
+      $('nRecent').textContent = (data.recent || []).filter(x => new Date(x.time).getTime() >= dayAgo).length;
+      $('nScopes').textContent = new Set((data.groups || []).map(g => g.scope)).size;
+
+      if (data.total === 0) {
+        $('body').innerHTML = '<div class="empty">✅ لا توجد أخطاء مسجّلة. النظام نظيف تماماً.</div>';
+        return;
+      }
+
+      let html = '<section><h2>الأخطاء مجمّعة حسب النوع (الأحدث أولاً)</h2><table><thead><tr>' +
+        '<th>#</th><th>الخطورة</th><th>المصدر</th><th>الرسالة</th><th>العدد</th><th>آخر ظهور</th></tr></thead><tbody>';
+      data.groups.forEach((g, i) => {
+        const [cls, label] = severity(g.scope, g.message);
+        html += `<tr>
+          <td>${i + 1}</td>
+          <td><span class="badge ${cls}">${label}</span></td>
+          <td class="scope">${esc(g.scope)}</td>
+          <td class="msg">${esc(g.message).slice(0, 220)}</td>
+          <td class="count ${g.count > 5 ? 'hi' : ''}">${g.count}</td>
+          <td class="time" title="${esc(g.lastSeen)}">${timeAgo(g.lastSeen)}</td>
+        </tr>`;
+        if (g.sampleStack) {
+          html += `<tr><td colspan="6" style="padding-top:0;border-bottom:1px solid var(--border)">
+            <details><summary>عرض أثر الاستدعاء (stack)</summary><pre>${esc(g.sampleStack).slice(0, 2000)}</pre></details></td></tr>`;
+        }
+      });
+      html += '</tbody></table></section>';
+
+      html += '<section><h2>أحدث الأخطاء (آخر 50)</h2><table><thead><tr><th>الوقت</th><th>المصدر</th><th>الرسالة</th></tr></thead><tbody>';
+      (data.recent || []).forEach(rec => {
+        html += `<tr><td class="time" title="${esc(rec.time)}">${esc(rec.time.replace('T', ' ').replace(/\..+/, ''))}</td>
+          <td class="scope">${esc(rec.scope)}</td><td class="msg">${esc(rec.message).slice(0, 200)}</td></tr>`;
+      });
+      html += '</tbody></table></section>';
+      $('body').innerHTML = html;
+    }
+
+    $('refresh').addEventListener('click', load);
+    $('regen').addEventListener('click', async () => {
+      $('regen').disabled = true;
+      try { await fetch('/api/reports/errors/generate', { method: 'POST' }); await load(); }
+      catch (e) { /* shown by load */ }
+      $('regen').disabled = false;
+    });
+    $('download').addEventListener('click', () => { window.location.href = '/api/reports/errors/download'; });
+
+    let timer = null;
+    $('auto').addEventListener('change', (e) => {
+      if (e.target.checked) { timer = setInterval(load, 10000); } else { clearInterval(timer); }
+    });
+
+    load();
+  </script>
+</body>
+</html>

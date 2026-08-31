@@ -1,0 +1,53 @@
+{
+  "_comment_roots": "Folders to scan. Use \"auto\" to let the scanner pick the drives itself, or list absolute paths, e.g. [\"D:\\\\projects\"].",
+  "roots": [
+    "auto"
+  ],
+  "_comment_acpDelegatePath": "Optional. Absolute path to the ACP delegate script used for AI repairs. Leave empty to resolve it from ACP_DELEGATE_PATH, a sibling checkout, or the acp command on PATH.",
+  "acpDelegatePath": "",
+  "_comment_supervisorAutoFix": "When true, the supervisor may send an AI agent to rewrite a project that keeps crashing, with no human in the loop. Off by default: that path is unattended and writes to your project folders.",
+  "supervisorAutoFix": false,
+  "maxDepth": 6,
+  "skipDirs": [
+    "node_modules",
+    ".git",
+    "Windows",
+    "Program Files",
+    "Program Files (x86)",
+    "ProgramData",
+    "AppData",
+    "$Recycle.Bin",
+    "System Volume Information",
+    ".cache",
+    "dist",
+    "build",
+    "vendor",
+    "venv",
+    ".venv",
+    "env",
+    "__pycache__"
+  ],
+  "excludePathPatterns": [
+    "\\.vscode",
+    "\\.vscode-server",
+    "\\.cursor",
+    "\\.windsurf",
+    "\\extensions\\",
+    "\\vendor\\",
+    "\\site-packages\\",
+    "\\dist-packages\\",
+    "\\.gradle\\",
+    "\\.m2\\",
+    "\\.cargo\\",
+    "\\.rustup\\",
+    "\\.nuget\\",
+    "\\.nvm\\",
+    "\\.npm\\",
+    "\\.pnpm-store\\",
+    "\\bower_components\\",
+    "\\.bun\\",
+    "\\.deno\\"
+  ],
+  "_comment_delegateTimeoutMinutes": "How long an AI repair may run before it is killed. A dependency install that downloads browsers needs more than the old fixed 5 minutes. Range 1-60.",
+  "delegateTimeoutMinutes": 20
+}

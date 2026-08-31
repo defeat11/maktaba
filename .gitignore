@@ -1,0 +1,87 @@
+# ============================================================
+# maktaba — .gitignore
+# قاعدة الأمان: كل ملف يولّده التشغيل يُستبعد افتراضياً.
+# ============================================================
+
+# --- مفاتيح وتوكنات (لا يُرفع أي منها أبداً) ---
+openrouter-key.json
+gateway-token.json
+*-key.json
+*-token.json
+.env
+.env.*
+!.env.example
+credentials.json
+service-account*.json
+*.pem
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+.npmrc
+.netrc
+
+# --- قواعد البيانات والفهرس (تحوي مسارات كل مشاريع الجهاز) ---
+db.json
+db.json.tmp
+db.sqlite
+db.sqlite-wal
+db.sqlite-shm
+*.bak-*
+scan-cursor.json
+process-snapshot.json
+doctor-budget.json
+
+# --- درجات النماذج وصحتها (مقيسة على حساب المستخدم) ---
+model-scores.json
+model-scores.json.tmp
+model-availability.json
+model-availability.json.tmp
+model-health.json
+model-health.json.tmp
+
+# --- السجلات (تحوي مسارات، أوامر تشغيل، ومخرجات مشاريع حقيقية) ---
+logs/
+*.log
+*.jsonl
+.srv.log
+maktaba_evolution.log
+ERROR-REPORT.md
+evolve-report.md
+
+# --- النسخ الاحتياطية ونقاط الرجوع ---
+backups/
+backup_*/
+*.zip
+
+# --- لقطات الشاشة لمشاريع المستخدم ---
+public/shots/
+
+# --- ملفات أدوات ACP والوكلاء ---
+.acp-fingerprint.json
+.acp-prompt.txt
+.acp-sessions/
+.acp-images/
+.acp-verify
+.acp-lessons.md
+.evolve-worktrees/
+
+# --- إعدادات محلية فيها مسارات الجهاز ---
+config.json
+!config.example.json
+
+# --- بناء ومؤقتات ---
+node_modules/
+dist/
+build/
+scratch/
+tmp/
+*.tmp
+.cache/
+
+# --- إعدادات المحررين ونظام التشغيل ---
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store

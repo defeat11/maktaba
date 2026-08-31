@@ -1,0 +1,20 @@
+{
+  "name": "maktaba",
+  "version": "1.0.0",
+  "description": "Project Library Manager - Backend Core",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --check public/app.js && npm run test:unit && node tools/smoke.js && node tools/integration-test.js",
+    "test:unit": "node tools/unit/store.test.js && node tools/unit/supervisor_scopelock.test.js && node tools/unit/verifyrun_signal.test.js && node tools/unit/logger_rotation.test.js && node tools/unit/gateway_routing.test.js && node tools/unit/system_registry_filter.test.js && node tools/unit/restore_points.test.js && node tools/unit/containers.test.js && node tools/unit/secrets.test.js && node tools/unit/action_log.test.js && node tools/unit/catalogue_backup.test.js && node tools/unit/port_ledger.test.js && node tools/unit/runtime_filter.test.js && node tools/unit/openrouter_failures.test.js && node tools/unit/quarantine.test.js && node tools/unit/adopt_process.test.js && node tools/unit/model_availability.test.js && node tools/unit/model_router.test.js && node tools/unit/request_timeout.test.js",
+    "truth": "node tools/truth-check.js",
+    "audit": "node tools/fleet-audit.js",
+    "bench": "node tools/bench-models.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "express": "^4.19.2",
+    "puppeteer": "^25.1.0"
+  }
+}
